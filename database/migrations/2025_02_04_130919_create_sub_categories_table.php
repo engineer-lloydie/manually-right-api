@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('manual_category_groups', function (Blueprint $table) {
+        Schema::create('sub_categories', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('main_category_id')->constrained('main_categories');
             $table->string('name');
             $table->string('description')->nullable();
             $table->string('url_slug')->unique();
+            $table->string('thumbnail')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('manual_category_groups');
+        Schema::dropIfExists('sub_categories');
     }
 };
