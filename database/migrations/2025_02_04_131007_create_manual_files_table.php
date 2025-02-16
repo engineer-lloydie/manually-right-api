@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('manual_id')->constrained('manuals');
             $table->string('title');
-            $table->string('file_name');
+            $table->string('filename');
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });

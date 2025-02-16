@@ -47,6 +47,20 @@ return [
             'report' => false,
         ],
 
+        'backblaze' => [
+            'driver' => 's3',
+            'key' => env('B2_KEY_ID'),
+            'secret' => env('B2_APPLICATION_KEY'),
+            'bucket' => env('B2_BUCKET'),
+            'region' => env('B2_REGION'),
+            'endpoint' => env('B2_ENDPOINT'),
+            'url' => env('B2_URL'),
+            'visibility' => 'private',
+            'use_path_style_endpoint' => true,
+            'throw' => true,
+            'report' => true
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -59,7 +73,6 @@ return [
             'throw' => false,
             'report' => false,
         ],
-
     ],
 
     /*

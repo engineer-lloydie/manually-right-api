@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('manual_thumbnails', function (Blueprint $table) {
             $table->id();
             $table->foreignId('manual_id')->constrained('manuals');
-            $table->string('file_name');
+            $table->string('filename');
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });
