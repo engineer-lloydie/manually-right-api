@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('manual_files', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('manual_id')->constrained('manuals');
-            $table->string('title');
+            $table->foreignId('manual_id')->unsigned()->nullable()->constrained('manuals')->nullOnDelete();
+            $table->string('title')->nullable();
             $table->string('filename');
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();

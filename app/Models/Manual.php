@@ -14,4 +14,12 @@ class Manual extends Model
         'url_slug',
         'status'
     ];
+
+    public function files() {
+        return $this->hasMany(ManualFile::class);
+    }
+
+    public function thumbnails() {
+        return $this->hasMany(ManualThumbnail::class);
+    }
 }

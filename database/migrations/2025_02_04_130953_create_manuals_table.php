@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('manuals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sub_category_id')->constrained('sub_categories');
+            $table->foreignId('sub_category_id')->unsigned()->nullable()->constrained('sub_categories')->nullOnDelete();
             $table->string('title');
             $table->string('description')->nullable();
             $table->string('price');

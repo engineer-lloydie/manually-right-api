@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Http\Controllers\Store;
+
+use App\Http\Controllers\Controller;
+use App\Models\MainCategory;
+use App\Models\Manual;
+use App\Models\SubCategory;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+class ListDisplayController extends Controller
+{
+    public function getMainCategories() {
+        return response()->json([
+            'data' =>  MainCategory::all()
+        ]);
+    }
+
+    public function getMainCategory(Request $request) {
+        return response()->json([
+            'data' =>  MainCategory::where('url_slug', $request->query('urlSlug'))->first()
+        ]);
+    }
+
+    public function getSubCategories($mainCategoryId) {
+        return response()->json([
+            'data' =>  SubCategory::where('main_category_id', $mainCategoryId)->get()
+        ]);
+    }
+
+    public function getSubCategory(Request $request) {
+        return response()->json([
+            'data' =>  SubCategory::where('url_slug', $request->query('urlSlug'))->first()
+        ]);
+    }
+
+    public function getManuals($subCategoryId) {
+        $manuals = Manual::with('thumbnails')
+            ->where('sub_category_id', $subCategoryId)
+            ->get()
+            ->transform(function ($manual) {
+                $manual->thumbnail = null;
+
+                if ($manual->thumbnails->isNotEmpty()) {
+                    $manualThumbnail = $manual->thumbnails->first();
+
+                    $filePath = 'documents/thumbnails/' . $manualThumbnail->filename;
+                    $expiry = now()->addMinutes(15);
+                    $url = Storage::temporaryUrl($filePath, $expiry);
+
+                    $manual->thumbnail = $url;
+                }
+
+                unset($manual->thumbnails);
+
+                return $manual;
+            });
+
+        return response()->json([
+            'data' =>  $manuals
+        ]); 
+    }
+
+    public function getManualDetails(Request $request) {
+        $manual = Manual::with(['files', 'thumbnails'])
+            ->where('url_slug', $request->query('urlSlug'))
+            ->first();
+
+            $manual->thumbnails = $manual->thumbnails->transform(function ($thumbnail) {
+                $filePath = 'documents/thumbnails/' . $thumbnail->filename;
+                $expiry = now()->addMinutes(15);
+                $url = Storage::temporaryUrl($filePath, $expiry);
+                $thumbnail->file_url = $url;
+
+                return $thumbnail;
+            });
+
+        return response()->json([
+            'data' =>  $manual
+        ]); 
+    }
+}
