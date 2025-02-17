@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Manual;
-use App\Models\ManualFile;
+use App\Models\ManualThumbnail;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class ManualFileController extends Controller
+class ManualThumbnailController extends Controller
 {
-    public function getDocumentFiles(Request $request) {
-        return DB::table('manual_files')->when($request->has('sortBy'), function($query) use ($request) {
+    public function getThumbnails(Request $request) {
+        return DB::table('manual_thumbnails')->when($request->has('sortBy'), function($query) use ($request) {
                 $params = json_decode($request->query('sortBy'));
 
                 $query->orderBy($params->key, $params->order);
@@ -22,32 +23,31 @@ class ManualFileController extends Controller
             ->paginate($request->query(('itemsPerPage')));
     }
 
-    public function addDocumentFile(Request $request, $manualId)
+    public function addThumbnail(Request $request, $manualId)
     {
         try {
             $filename = null;
 
-            if ($request->hasFile('document')) {
+            if ($request->hasFile('thumbnail')) {
                 $manual = Manual::find($manualId);
                 
-                $file = $request->file('document');
+                $file = $request->file('thumbnail');
                 $filename = $manual->url_slug . '-' . date('m-d-Y-His') . '.' . $file->getClientOriginalExtension();
-                $storedFile = $file->storeAs('documents/files', $filename, 'backblaze');
+                $storedFile = $file->storeAs('documents/thumbnails', $filename, 'backblaze');
 
                 if (!$storedFile) {
                     throw new Exception('Unable to upload file');
                 }
             }
     
-            ManualFile::create([
+            ManualThumbnail::create([
                 'manual_id' => $manualId,
-                'title' => $request->input('title'),
                 'filename' => $filename,
                 'status' => $request->input('status')
             ]);
     
             return response()->json([
-                'message' => 'Manual document file has been added successfully.'
+                'message' => 'Manual thumbnail file has been added successfully.'
             ]);
         } catch (Exception $exception) {
             throw $exception;
@@ -55,18 +55,18 @@ class ManualFileController extends Controller
     }
 
 
-    public function deleteDocumentFile($manualId, $documentFileId) {
+    public function deleteThumbnail($manualId, $thumbnailFileId) {
         try {
-            $manualFile = ManualFile::findOrFail($documentFileId);
+            $manualThumbnail = ManualThumbnail::findOrFail($thumbnailFileId);
 
-            if ($manualFile) {
-                Storage::disk('backblaze')->delete('documents/files/' . $manualFile->filename);
+            if ($manualThumbnail) {
+                Storage::disk('backblaze')->delete('documents/thumbnails/' . $manualThumbnail->filename);
                 
-                $manualFile->delete();
+                $manualThumbnail->delete();
             }
 
             return response()->json([
-                'message' => 'Manual document file has been deleted successfully.'
+                'message' => 'Manual thumbnail file has been deleted successfully.'
             ]);
         } catch (Exception $exception) {
             throw $exception;

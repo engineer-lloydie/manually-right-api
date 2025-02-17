@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\MainCategoryController;
-use App\Http\Controllers\ManualController;
-use App\Http\Controllers\ManualFileController;
-use App\Http\Controllers\ManualThumbnailController;
-use App\Http\Controllers\SubCategoryContoller;
+use App\Http\Controllers\Admin\MainCategoryController;
+use App\Http\Controllers\Admin\ManualController;
+use App\Http\Controllers\Admin\ManualFileController;
+use App\Http\Controllers\Admin\ManualThumbnailController;
+use App\Http\Controllers\Admin\SubCategoryContoller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -12,6 +12,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// Admin Routes
 Route::prefix('/main-categories')->group(function () {
     Route::get('/', [MainCategoryController::class, 'getCategories']);
     Route::post('/', [MainCategoryController::class, 'addCategory']);
@@ -49,3 +50,5 @@ Route::prefix('/manuals')->group(function () {
     
     Route::get('file-signed-url/{id}', [ManualController::class, 'getSignedUrl']);
 });
+
+// Client Routes
