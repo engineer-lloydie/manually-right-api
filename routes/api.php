@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\ManualController;
 use App\Http\Controllers\Admin\ManualFileController;
 use App\Http\Controllers\Admin\ManualThumbnailController;
 use App\Http\Controllers\Admin\SubCategoryContoller;
+use App\Http\Controllers\Auth\TokenAuthController;
+use App\Http\Controllers\Store\CartController;
 use App\Http\Controllers\Store\ListDisplayController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -65,3 +67,13 @@ Route::prefix('/store')->group(function () {
         Route::get('/sub-categories/manual-details', [ListDisplayController::class, 'getManualDetails']);
     });
 });
+
+Route::post('/cart', [CartController::class, 'addToCart']);
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+Route::post('/login', [TokenAuthController::class, 'login']);
+Route::post('/register', [TokenAuthController::class, 'register']);
+Route::middleware(['auth:sanctum'])->post('/logout', [TokenAuthController::class, 'logout']);
