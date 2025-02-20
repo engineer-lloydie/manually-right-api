@@ -33,7 +33,7 @@ class TokenAuthController extends Controller
             ]);
     
             return response()->json([
-                'message' => 'User Created '
+                'message' => 'User Created'
             ]);
         } catch (Exception $e) {
             throw $e;

@@ -68,7 +68,9 @@ Route::prefix('/store')->group(function () {
     });
 });
 
-Route::post('/cart', [CartController::class, 'addToCart']);
+Route::get('/carts', [CartController::class, 'fetchCarts']);
+Route::post('/carts', [CartController::class, 'addToCart']);
+Route::delete('/carts/{id}', [CartController::class, 'deleteCart']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
