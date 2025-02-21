@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class CartController extends Controller
 {
     public function fetchCarts(Request $request) {
         try {
-            $carts = Cart::leftJoin('manuals', 'carts.manual_id', 'manuals.id');
+            $carts = Cart::leftJoin('manuals', 'carts.manual_id', '=', 'manuals.id')
+                ->leftJoin(DB::raw('(SELECT manual_id, filename FROM manual_thumbnails ORDER BY id ASC LIMIT 1) as thumbnails'), 'manuals.id', '=', 'thumbnails.manual_id');
 
             if ($request->query('userId')) {
                 $carts->where('user_id', $request->query('userId'));
@@ -21,10 +24,19 @@ class CartController extends Controller
 
             $carts = $carts->select(
                     'carts.*',
-                    'manuals.title'
+                    'manuals.title',
+                    'thumbnails.filename'
                 )
-                ->orderBy('id', 'desc')
-                ->get();
+                ->orderBy('carts.id', 'desc')
+                ->get()
+                ->map(function ($cart) {
+                    $filePath = 'documents/thumbnails/' . $cart->filename;
+                    $expiry = now()->addMinutes(15);
+                    $url = Storage::temporaryUrl($filePath, $expiry);
+                    $cart->thumbnail = $url;
+
+                    return $cart;
+                });
             
             return response()->json([
                 'data' => $carts,
@@ -57,5 +69,21 @@ class CartController extends Controller
         return response()->json([
             'message' => 'Cart has been deleted successfully.'
         ]);
+    }
+
+    public function transferCart(Request $request) {
+        try {
+            Cart::whereIn('id', $request->input('cartIds'))
+                ->update([
+                    'user_id' => $request->input('userId'),
+                    'guest_id' => null
+                ]);
+
+            return response()->json([
+                'message' => 'Carts have been transferred successfully.'
+            ]);
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 }

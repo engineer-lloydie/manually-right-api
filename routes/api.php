@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ManualFileController;
 use App\Http\Controllers\Admin\ManualThumbnailController;
 use App\Http\Controllers\Admin\SubCategoryContoller;
 use App\Http\Controllers\Auth\TokenAuthController;
+use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\Store\CartController;
 use App\Http\Controllers\Store\ListDisplayController;
 use Illuminate\Http\Request;
@@ -71,6 +72,7 @@ Route::prefix('/store')->group(function () {
 Route::get('/carts', [CartController::class, 'fetchCarts']);
 Route::post('/carts', [CartController::class, 'addToCart']);
 Route::delete('/carts/{id}', [CartController::class, 'deleteCart']);
+Route::post('/carts/transfer', [CartController::class, 'transferCart']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -79,3 +81,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [TokenAuthController::class, 'login']);
 Route::post('/register', [TokenAuthController::class, 'register']);
 Route::middleware(['auth:sanctum'])->post('/logout', [TokenAuthController::class, 'logout']);
+
+Route::post('/create-order', [PayPalController::class, 'createOrder']);
+Route::post('/capture-order', [PayPalController::class, 'captureOrder']);
+
+Route::post('/complete-order', [PayPalController::class, 'captureOrder']);
