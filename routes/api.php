@@ -89,6 +89,7 @@ Route::post('/capture-order', [PayPalController::class, 'captureOrder']);
 
 Route::post('/complete-order', [OrderCompletionController::class, 'completeOrder']);
 Route::get('/orders/lists', [OrderController::class, 'getOrderLists']);
+Route::get('/admin/orders/lists', [OrderController::class, 'getAdminOrderLists']);
 
 Route::post('/download-files', [ManualFileController::class, 'downloadZip']);
 

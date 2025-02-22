@@ -37,6 +37,23 @@ class OrderController extends Controller
         }
     }
 
+    public function getAdminOrderLists(Request $request) {
+        try {
+            return OrderMaster::with(['carts', 'orderDetails'])
+                ->where('payment_status', 'paid')
+                ->when($request->has('sortBy'), function($query) use ($request) {
+                    $params = json_decode($request->query('sortBy'));
+
+                    $query->orderBy($params->key, $params->order);
+                }, function ($query) {
+                    $query->orderBy('id', 'desc');
+                })
+                ->paginate($request->query(('itemsPerPage')));
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
     public function checkOrder(Request $request) {
         try {
             $orderMasterIds = [];
