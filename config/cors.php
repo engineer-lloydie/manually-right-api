@@ -19,7 +19,12 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:3000'],
+    'allowed_origins' => [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'https://manually-right.com',
+        'https://admin.manually-right.com'
+    ],
 
     'allowed_origins_patterns' => [],
 
