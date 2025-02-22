@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use App\Models\Manual;
 use App\Models\ManualFile;
 use App\Models\ManualThumbnail;
@@ -88,5 +89,63 @@ class ManualController extends Controller
         $url = Storage::temporaryUrl($filePath, $expiry);
     
         return response()->json(['url' => $url]);
+    }
+
+    public function getLatestProducts() {
+        $manuals = Manual::leftJoin(DB::raw('(SELECT manual_id, filename FROM manual_thumbnails ORDER BY id ASC LIMIT 1) as thumbnails'), 'manuals.id', '=', 'thumbnails.manual_id')
+            ->leftJoin('sub_categories', 'manuals.id', '=', 'sub_categories.id')
+            ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
+            ->select('manuals.*', 'thumbnails.filename', 'sub_categories.url_slug as sub_url_slug', 'main_categories.url_slug as main_url_slug')
+            ->limit(4)
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function ($manual) {
+                $filePath = 'documents/thumbnails/' . $manual->filename;
+                $expiry = now()->addMinutes(15);
+                $url = Storage::temporaryUrl($filePath, $expiry);
+
+                $manual->thumbnails->first()->url = $url;
+
+                return $manual;
+            });
+
+        return response()->json([
+            'data' => $manuals
+        ]);
+    }
+
+    public function getBestSetting() {
+        $manuals = [];
+
+        $manualIds = Cart::where('status', 'sold')
+            ->select('manual_id')
+            ->orderBy('price', 'desc')
+            ->distinct('manual_id')
+            ->limit(4)
+            ->get()
+            ->pluck('manual_id')
+            ->toArray();
+
+        if (count($manualIds)) {
+            $manuals = Manual::leftJoin(DB::raw('(SELECT manual_id, filename FROM manual_thumbnails ORDER BY id ASC LIMIT 1) as thumbnails'), 'manuals.id', '=', 'thumbnails.manual_id')
+                ->leftJoin('sub_categories', 'manuals.id', '=', 'sub_categories.id')
+                ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
+                ->whereIn('manuals.id', $manualIds)
+                ->select('manuals.*', 'thumbnails.filename', 'sub_categories.url_slug as sub_url_slug', 'main_categories.url_slug as main_url_slug')
+                ->orderBy('id', 'desc')
+                ->get()
+                ->map(function ($manual) {
+                    $filePath = 'documents/thumbnails/' . $manual->filename;
+                    $expiry = now()->addMinutes(15);
+                    $url = Storage::temporaryUrl($filePath, $expiry);
+
+                    $manual->thumbnails->first()->url = $url;
+
+                    return $manual;
+                });
+        }
+        return response()->json([
+            'data' => $manuals
+        ]);
     }
 }

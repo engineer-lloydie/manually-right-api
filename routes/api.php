@@ -93,3 +93,8 @@ Route::get('/orders/lists', [OrderController::class, 'getOrderLists']);
 Route::post('/download-files', [ManualFileController::class, 'downloadZip']);
 
 Route::get('/check-order', [OrderController::class, 'checkOrder']);
+
+Route::prefix('/items')->group(function () {
+    Route::get('/best-selling', [ManualController::class, 'getBestSetting']);
+    Route::get('/latest', [ManualController::class, 'getLatestProducts']);
+});
