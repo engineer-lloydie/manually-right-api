@@ -91,3 +91,5 @@ Route::post('/complete-order', [OrderCompletionController::class, 'completeOrder
 Route::get('/orders/lists', [OrderController::class, 'getOrderLists']);
 
 Route::post('/download-files', [ManualFileController::class, 'downloadZip']);
+
+Route::get('/check-order', [OrderController::class, 'checkOrder']);

@@ -17,12 +17,13 @@ class CartController extends Controller
                 ->leftJoin(DB::raw('(SELECT manual_id, filename FROM manual_thumbnails ORDER BY id ASC LIMIT 1) as thumbnails'), 'manuals.id', '=', 'thumbnails.manual_id');
 
             if ($request->query('userId')) {
-                $carts->where('user_id', $request->query('userId'));
+                $carts->where('carts.user_id', $request->query('userId'));
             } else {
-                $carts->where('guest_id', $request->query('guestId'));
+                $carts->where('carts.guest_id', $request->query('guestId'));
             }
 
-            $carts = $carts->select(
+            $carts = $carts->where('carts.status', 'pending')
+                ->select(
                     'carts.*',
                     'manuals.title',
                     'thumbnails.filename'

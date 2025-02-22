@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CheckoutRequest;
 use App\Models\Cart;
+use App\Models\GuestOrder;
 use App\Models\OrderDetail;
 use App\Models\OrderMaster;
 use Carbon\Carbon;
@@ -11,7 +13,7 @@ use Illuminate\Http\Request;
 
 class OrderCompletionController extends Controller
 {
-    public function completeOrder(Request $request) {
+    public function completeOrder(CheckoutRequest $request) {
         try {
             $carts = Cart::whereIn('id', $request->input('cartIds'))->get();
 
@@ -38,6 +40,16 @@ class OrderCompletionController extends Controller
                     'subtotal' => $cart->price,
                     'download_count' => 5,
                     'status' => 'completed'
+                ]);
+            }
+
+            if ($request->input('guestId')) {
+                GuestOrder::create([
+                    'guest_id' => $request->input('guestId'),
+                    'order_master_id' => $orderMaster->id,
+                    'email_address' => $request->input('emailAddress'),
+                    'first_name' => $request->input('firstName'),
+                    'last_name' => $request->input('lastName')
                 ]);
             }
 
