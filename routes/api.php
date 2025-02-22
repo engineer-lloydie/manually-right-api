@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\ManualFileController;
 use App\Http\Controllers\Admin\ManualThumbnailController;
 use App\Http\Controllers\Admin\SubCategoryContoller;
 use App\Http\Controllers\Auth\TokenAuthController;
+use App\Http\Controllers\OrderCompletionController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\Store\CartController;
 use App\Http\Controllers\Store\ListDisplayController;
@@ -85,4 +87,7 @@ Route::middleware(['auth:sanctum'])->post('/logout', [TokenAuthController::class
 Route::post('/create-order', [PayPalController::class, 'createOrder']);
 Route::post('/capture-order', [PayPalController::class, 'captureOrder']);
 
-Route::post('/complete-order', [PayPalController::class, 'captureOrder']);
+Route::post('/complete-order', [OrderCompletionController::class, 'completeOrder']);
+Route::get('/orders/lists', [OrderController::class, 'getOrderLists']);
+
+Route::post('/download-files', [ManualFileController::class, 'downloadZip']);

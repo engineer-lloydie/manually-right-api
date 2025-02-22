@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->integer('guest_id')->nullable();
-            $table->string('order_number');
+            $table->string('order_number')->nullable();
+            $table->string('transaction_id');
             $table->integer('total_price');
             $table->integer('payment_method');
             $table->dateTime('purchase_date');

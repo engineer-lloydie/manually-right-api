@@ -14,4 +14,11 @@ class Cart extends Model
         'quantity',
         'status'
     ];
+
+    public function manual() {
+        return $this->belongsTo(Manual::class, 'manual_id')
+            ->with(['thumbnails' => function ($query) {
+                $query->first();
+            }]);
+    }
 }

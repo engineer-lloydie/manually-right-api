@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Manual;
 use App\Models\ManualFile;
+use App\Models\OrderDetail;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use ZipArchive;
 
 class ManualFileController extends Controller
 {
@@ -72,5 +74,61 @@ class ManualFileController extends Controller
         } catch (Exception $exception) {
             throw $exception;
         }
+    }
+
+    public function downloadZip(Request $request) {
+        try {
+            $data = $request->validate([
+                'manualId' => 'required',
+                'orderMasterId' => 'required'
+            ]);
+            
+            $files = $this->getFilesFromIds($data['manualId']);
+    
+            $zipFileName = tempnam(sys_get_temp_dir(), 'zip');
+            $zip = new ZipArchive();
+    
+            if ($zip->open($zipFileName, ZipArchive::CREATE) !== TRUE) {
+                return response()->json(['error' => 'Cannot create zip file'], 500);
+            }
+    
+            foreach ($files as $file) {
+                $fileContent = file_get_contents($file['url']);
+    
+                if ($fileContent === false) {
+                    continue;
+                }
+    
+                $zip->addFromString($file['name'], $fileContent);
+            }
+    
+            $zip->close();
+
+            OrderDetail::where('order_master_id', $request->input('orderMasterId'))
+                ->decrement('download_count');
+    
+            return response()->download($zipFileName, 'files.zip', [
+                'Content-Type' => 'application/zip',
+                'Content-Disposition' => 'attachment; filename="files.zip"',
+            ])->deleteFileAfterSend(true);
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    protected function getFilesFromIds($manualId) {
+        return ManualFile::where('id', $manualId)
+            ->select('filename')
+            ->get()
+            ->map(function ($manual) {
+                $filePath = 'documents/files/' . $manual->filename;
+                $expiry = now()->addMinutes(15);
+                $url = Storage::temporaryUrl($filePath, $expiry);
+
+                return [
+                    'name' => $manual->filename,
+                    'url' => $url
+                ];
+            });
     }
 }
