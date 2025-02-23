@@ -118,7 +118,7 @@ class ManualController extends Controller
         $manuals = [];
 
         $manualIds = Cart::where('status', 'sold')
-            ->select('manual_id')
+            ->select('manual_id', 'price')
             ->orderBy('price', 'desc')
             ->distinct('manual_id')
             ->limit(4)
