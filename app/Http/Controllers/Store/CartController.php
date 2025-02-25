@@ -50,18 +50,22 @@ class CartController extends Controller
     }
 
     public function addToCart(Request $request) {
-        Cart::create([
-            'user_id' => $request->input('userId'),
-            'guest_id' => $request->input('guestId'),
-            'manual_id' => $request->input('manualId'),
-            'price' => $request->input('price'),
-            'quantity' => $request->input('quantity'),
-            'status' => 'pending'
-        ]);
-
-        return response()->json([
-            'message' => 'Cart has been added successfully.'
-        ]);
+        try {
+            Cart::create([
+                'user_id' => $request->input('userId'),
+                'guest_id' => $request->input('guestId'),
+                'manual_id' => $request->input('manualId'),
+                'price' => $request->input('price'),
+                'quantity' => $request->input('quantity'),
+                'status' => 'pending'
+            ]);
+    
+            return response()->json([
+                'message' => 'Cart has been added successfully.'
+            ]);
+        } catch (Exception $e) {
+            throw $_GET;
+        }
     }
 
     public function deleteCart($cartId) {
