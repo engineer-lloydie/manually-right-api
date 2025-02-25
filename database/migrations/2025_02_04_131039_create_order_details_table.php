@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('cart_id')->constrained('carts');
             $table->foreignId('order_master_id')->constrained('order_masters');
             $table->string('item_number');
-            $table->integer('subtotal');
+            $table->string('subtotal');
             $table->integer('download_count')->default(0);
             $table->enum('status', ['pending', 'completed'])->default('pending');
             $table->timestamps();

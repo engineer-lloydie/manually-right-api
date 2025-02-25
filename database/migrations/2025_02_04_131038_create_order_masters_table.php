@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('order_masters', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users');
-            $table->integer('guest_id')->nullable();
+            $table->string('guest_id')->nullable();
             $table->string('order_number')->nullable();
             $table->string('transaction_id');
-            $table->integer('total_price');
+            $table->string('total_price');
             $table->integer('payment_method');
             $table->dateTime('purchase_date');
             $table->enum('payment_status', ['unpaid', 'paid', 'failed'])->default('unpaid');
