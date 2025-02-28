@@ -14,7 +14,19 @@ class CartController extends Controller
     public function fetchCarts(Request $request) {
         try {
             $carts = Cart::leftJoin('manuals', 'carts.manual_id', '=', 'manuals.id')
-                ->leftJoin(DB::raw('(SELECT manual_id, filename FROM manual_thumbnails ORDER BY id ASC LIMIT 1) as thumbnails'), 'manuals.id', '=', 'thumbnails.manual_id');
+                ->leftJoinSub(
+                    DB::table('manual_thumbnails')
+                        ->select('manual_id', 'filename')
+                        ->whereIn('id', function ($query) {
+                            $query->select(DB::raw('MIN(id)'))
+                                ->from('manual_thumbnails')
+                                ->groupBy('manual_id');
+                        }),
+                    'thumbnails',
+                    'manuals.id',
+                    '=',
+                    'thumbnails.manual_id'
+                );
 
             if ($request->query('userId')) {
                 $carts->where('carts.user_id', $request->query('userId'));
