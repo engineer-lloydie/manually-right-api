@@ -26,7 +26,7 @@ class CartController extends Controller
                 ->select(
                     'carts.*',
                     'manuals.title',
-                    'thumbnails.filename'
+                    'filename'
                 )
                 ->orderBy('carts.id', 'desc')
                 ->get()
