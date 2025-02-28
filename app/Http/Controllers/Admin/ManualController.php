@@ -100,7 +100,7 @@ class ManualController extends Controller
             ->orderBy('id', 'desc')
             ->get()
             ->map(function ($manual) {
-                $filePath = 'documents/thumbnails/' . $manual->filename;
+                $filePath = 'documents/thumbnails/' . $manual->thumbnails->first()->filename;
                 $expiry = now()->addMinutes(15);
                 $url = Storage::temporaryUrl($filePath, $expiry);
 
@@ -135,7 +135,7 @@ class ManualController extends Controller
                 ->orderBy('id', 'desc')
                 ->get()
                 ->map(function ($manual) {
-                    $filePath = 'documents/thumbnails/' . $manual->filename;
+                    $filePath = 'documents/thumbnails/' . $manual->thumbnails->first()->filename;
                     $expiry = now()->addMinutes(15);
                     $url = Storage::temporaryUrl($filePath, $expiry);
 
