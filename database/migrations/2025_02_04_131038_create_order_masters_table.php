@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('guest_id')->nullable();
             $table->string('order_number')->nullable();
             $table->string('transaction_id');
-            $table->string('total_price');
+            $table->double('total_price');
             $table->integer('payment_method');
             $table->dateTime('purchase_date');
             $table->enum('payment_status', ['unpaid', 'paid', 'failed'])->default('unpaid');

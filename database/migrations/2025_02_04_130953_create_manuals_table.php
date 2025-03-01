@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('sub_category_id')->unsigned()->nullable()->constrained('sub_categories')->nullOnDelete();
             $table->string('title');
             $table->string('description')->nullable();
-            $table->float('price');
+            $table->double('price');
             $table->string('url_slug')->unique();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();

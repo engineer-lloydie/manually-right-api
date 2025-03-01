@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->foreignId('manual_id')->constrained('manuals');
             $table->string('guest_id')->nullable();
-            $table->integer('price');
+            $table->double('price');
             $table->integer('quantity');
             $table->enum('status', ['pending', 'sold'])->default('pending');
             $table->timestamps();
