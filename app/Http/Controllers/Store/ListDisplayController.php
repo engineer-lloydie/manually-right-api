@@ -38,6 +38,7 @@ class ListDisplayController extends Controller
     public function getManuals($subCategoryId) {
         $manuals = Manual::with('thumbnails')
             ->where('sub_category_id', $subCategoryId)
+            ->whereHas('thumbnails')
             ->get()
             ->transform(function ($manual) {
                 $manual->thumbnail = null;

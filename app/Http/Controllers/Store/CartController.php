@@ -13,20 +13,7 @@ class CartController extends Controller
 {
     public function fetchCarts(Request $request) {
         try {
-            $carts = Cart::leftJoin('manuals', 'carts.manual_id', '=', 'manuals.id')
-                ->leftJoinSub(
-                    DB::table('manual_thumbnails')
-                        ->select('manual_id', 'filename')
-                        ->whereIn('id', function ($query) {
-                            $query->select(DB::raw('MIN(id)'))
-                                ->from('manual_thumbnails')
-                                ->groupBy('manual_id');
-                        }),
-                    'thumbnails',
-                    'manuals.id',
-                    '=',
-                    'thumbnails.manual_id'
-                );
+            $carts = Cart::with('manual');
 
             if ($request->query('userId')) {
                 $carts->where('carts.user_id', $request->query('userId'));
@@ -35,15 +22,10 @@ class CartController extends Controller
             }
 
             $carts = $carts->where('carts.status', 'pending')
-                ->select(
-                    'carts.*',
-                    'manuals.title',
-                    'filename'
-                )
                 ->orderBy('carts.id', 'desc')
                 ->get()
                 ->map(function ($cart) {
-                    $filePath = 'documents/thumbnails/' . $cart->filename;
+                    $filePath = 'documents/thumbnails/' . $cart->manual->thumbnails()->first()->filename;
                     $expiry = now()->addMinutes(15);
                     $url = Storage::temporaryUrl($filePath, $expiry);
                     $cart->thumbnail = $url;

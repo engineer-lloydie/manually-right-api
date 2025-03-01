@@ -92,10 +92,17 @@ class ManualController extends Controller
     }
 
     public function getLatestProducts() {
-        $manuals = Manual::leftJoin(DB::raw('(SELECT manual_id, filename FROM manual_thumbnails ORDER BY id ASC LIMIT 1) as thumbnails'), 'manuals.id', '=', 'thumbnails.manual_id')
+        $manuals = Manual::with(['thumbnails' => function($query) {
+                $query->first();
+            }])
             ->leftJoin('sub_categories', 'manuals.id', '=', 'sub_categories.id')
             ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
-            ->select('manuals.*', 'thumbnails.filename', 'sub_categories.url_slug as sub_url_slug', 'main_categories.url_slug as main_url_slug')
+            ->whereHas('thumbnails')
+            ->select(
+                'manuals.*',
+                'sub_categories.url_slug as sub_url_slug',
+                'main_categories.url_slug as main_url_slug'
+            )
             ->limit(4)
             ->orderBy('id', 'desc')
             ->get()
@@ -127,11 +134,18 @@ class ManualController extends Controller
             ->toArray();
 
         if (count($manualIds)) {
-            $manuals = Manual::leftJoin(DB::raw('(SELECT manual_id, filename FROM manual_thumbnails ORDER BY id ASC LIMIT 1) as thumbnails'), 'manuals.id', '=', 'thumbnails.manual_id')
+            $manuals = Manual::with(['thumbnails' => function($query) {
+                    $query->first();
+                }])
                 ->leftJoin('sub_categories', 'manuals.id', '=', 'sub_categories.id')
                 ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
+                ->whereHas('thumbnails')
                 ->whereIn('manuals.id', $manualIds)
-                ->select('manuals.*', 'thumbnails.filename', 'sub_categories.url_slug as sub_url_slug', 'main_categories.url_slug as main_url_slug')
+                ->select(
+                    'manuals.*',
+                    'sub_categories.url_slug as sub_url_slug',
+                    'main_categories.url_slug as main_url_slug'
+                )
                 ->orderBy('id', 'desc')
                 ->get()
                 ->map(function ($manual) {
