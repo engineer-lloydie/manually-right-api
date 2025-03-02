@@ -36,7 +36,7 @@ class CartController extends Controller
             return response()->json([
                 'data' => $carts,
                 'count' => $carts->count(),
-                'total' => $carts->sum('price')
+                'total' => round($carts->sum('price'), 2)
             ]);
         } catch (Exception $e) {
             throw $e;

@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ManualFileController;
 use App\Http\Controllers\Admin\ManualThumbnailController;
 use App\Http\Controllers\Admin\SubCategoryContoller;
 use App\Http\Controllers\Auth\TokenAuthController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\OrderCompletionController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayPalController;
@@ -98,4 +99,12 @@ Route::get('/check-order', [OrderController::class, 'checkOrder']);
 Route::prefix('/items')->group(function () {
     Route::get('/best-selling', [ManualController::class, 'getBestSetting']);
     Route::get('/latest', [ManualController::class, 'getLatestProducts']);
+});
+
+Route::prefix('/banners')->group(function () {
+    Route::post('/', [BannerController::class, 'createBanner']);
+    Route::get('/', [BannerController::class, 'fetchAdminBanners']);
+    Route::get('/client', [BannerController::class, 'fetchClientBanner']);
+    Route::delete('/{bannerId}', [BannerController::class, 'deleteBanner']);
+    Route::get('/{bannerId}/preview', [BannerController::class, 'previewBanner']);
 });

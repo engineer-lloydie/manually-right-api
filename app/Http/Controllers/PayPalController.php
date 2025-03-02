@@ -22,7 +22,7 @@ class PayPalController extends Controller
                 [
                     "amount" => [
                         "currency_code" => "USD",
-                        "value" => $carts->sum('price') // Adjust the amount as needed
+                        "value" => round($carts->sum('price'), 2)
                     ]
                 ]
             ]
