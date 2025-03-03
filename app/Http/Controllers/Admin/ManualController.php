@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\Manual;
 use App\Models\ManualFile;
 use App\Models\ManualThumbnail;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -30,6 +31,58 @@ class ManualController extends Controller
                     })
                     ->paginate($request->query(('itemsPerPage')));
             }
+    }
+
+    public function searchManuals(Request $request) {
+        try {
+            if (!$request->query('search')) {
+                return response()->json([
+                    'data' => []
+                ]);
+            }
+
+            $manualIds = DB::table('manuals')
+                ->where('title', 'like', '%' . $request->input('search') . '%')
+                ->pluck('id');
+
+            if ($manualIds->isEmpty()) {
+                return response()->json([
+                    'data' => []
+                ]);
+            }
+
+            $manuals = Manual::with(['thumbnails' => function($query) {
+                    $query->first();
+                }])
+                ->leftJoin('sub_categories', 'manuals.id', '=', 'sub_categories.id')
+                ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
+                ->whereHas('thumbnails')
+                ->whereIn('manuals.id', $manualIds)
+                ->select(
+                    'manuals.*',
+                    'sub_categories.url_slug as sub_url_slug',
+                    'main_categories.url_slug as main_url_slug'
+                )
+                ->orderBy('id', 'desc')
+                ->get()
+                ->map(function ($manual) {
+                    $filePath = 'documents/thumbnails/' . $manual->thumbnails->first()->filename;
+                    $expiry = now()->addMinutes(15);
+                    $url = Storage::temporaryUrl($filePath, $expiry);
+
+                    unset($manual->thumbnails);
+
+                    $manual->thumbnail_url = $url;
+
+                    return $manual;
+                });
+            
+            return response()->json([
+                'data' => $manuals
+            ]);  
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     public function addManual(Request $request) {

@@ -99,6 +99,7 @@ Route::get('/check-order', [OrderController::class, 'checkOrder']);
 Route::prefix('/items')->group(function () {
     Route::get('/best-selling', [ManualController::class, 'getBestSetting']);
     Route::get('/latest', [ManualController::class, 'getLatestProducts']);
+    Route::get('/search', [ManualController::class, 'searchManuals']);
 });
 
 Route::prefix('/banners')->group(function () {
