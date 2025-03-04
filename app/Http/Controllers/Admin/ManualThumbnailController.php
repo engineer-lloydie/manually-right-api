@@ -12,8 +12,10 @@ use Illuminate\Support\Facades\Storage;
 
 class ManualThumbnailController extends Controller
 {
-    public function getThumbnails(Request $request) {
-        return DB::table('manual_thumbnails')->when($request->has('sortBy'), function($query) use ($request) {
+    public function getThumbnails(Request $request, $manualId) {
+        return DB::table('manual_thumbnails')
+            ->where('manual_id', $manualId)
+            ->when($request->has('sortBy'), function($query) use ($request) {
                 $params = json_decode($request->query('sortBy'));
 
                 $query->orderBy($params->key, $params->order);

@@ -14,8 +14,10 @@ use ZipArchive;
 
 class ManualFileController extends Controller
 {
-    public function getDocumentFiles(Request $request) {
-        return DB::table('manual_files')->when($request->has('sortBy'), function($query) use ($request) {
+    public function getDocumentFiles(Request $request, $manualId) {
+        return DB::table('manual_files')
+            ->where('manual_id', $manualId)
+            ->when($request->has('sortBy'), function($query) use ($request) {
                 $params = json_decode($request->query('sortBy'));
 
                 $query->orderBy($params->key, $params->order);
