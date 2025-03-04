@@ -57,6 +57,7 @@ return [
             'url' => env('B2_URL'),
             'visibility' => 'private',
             'use_path_style_endpoint' => true,
+            'max_upload_size' => env('MAX_UPLOAD_SIZE', 10485760), // 10MB
             'throw' => true,
             'report' => true
         ],
