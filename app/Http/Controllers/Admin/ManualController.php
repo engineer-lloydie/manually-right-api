@@ -157,16 +157,16 @@ class ManualController extends Controller
                 )
                 ->limit(4)
                 ->orderBy('id', 'desc')
-                ->get();
-                // ->map(function ($manual) {
-                //     $filePath = 'documents/thumbnails/' . $manual->thumbnails->first()->filename;
-                //     $expiry = now()->addMinutes(15);
-                //     $url = Storage::temporaryUrl($filePath, $expiry);
+                ->get()
+                ->map(function ($manual) {
+                    $filePath = 'documents/thumbnails/' . $manual->thumbnails->first()->filename;
+                    $expiry = now()->addMinutes(15);
+                    $url = Storage::temporaryUrl($filePath, $expiry);
 
-                //     $manual->thumbnails->first()->url = $url;
+                    $manual->thumbnails->first()->url = $url;
 
-                //     return $manual;
-                // });
+                    return $manual;
+                });
 
             return response()->json([
                 'data' => $manuals
@@ -190,9 +190,7 @@ class ManualController extends Controller
                 ->toArray();
     
             if (count($manualIds)) {
-                $manuals = Manual::with(['thumbnails' => function($query) {
-                        $query->first();
-                    }])
+                $manuals = Manual::with('thumbnails')
                     ->leftJoin('sub_categories', 'manuals.id', '=', 'sub_categories.id')
                     ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
                     ->whereHas('thumbnails')
