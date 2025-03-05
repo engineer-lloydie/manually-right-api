@@ -145,60 +145,19 @@ class ManualController extends Controller
     }
 
     public function getLatestProducts() {
-        $manuals = Manual::with(['thumbnails' => function($query) {
-                $query->first();
-            }])
-            ->leftJoin('sub_categories', 'manuals.id', '=', 'sub_categories.id')
-            ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
-            ->whereHas('thumbnails')
-            ->select(
-                'manuals.*',
-                'sub_categories.url_slug as sub_url_slug',
-                'main_categories.url_slug as main_url_slug'
-            )
-            ->limit(4)
-            ->orderBy('id', 'desc')
-            ->get()
-            ->map(function ($manual) {
-                $filePath = 'documents/thumbnails/' . $manual->thumbnails->first()->filename;
-                $expiry = now()->addMinutes(15);
-                $url = Storage::temporaryUrl($filePath, $expiry);
-
-                $manual->thumbnails->first()->url = $url;
-
-                return $manual;
-            });
-
-        return response()->json([
-            'data' => $manuals
-        ]);
-    }
-
-    public function getBestSetting() {
-        $manuals = [];
-
-        $manualIds = Cart::where('status', 'sold')
-            ->select('manual_id', 'price')
-            ->orderBy('price', 'desc')
-            ->distinct('manual_id')
-            ->limit(4)
-            ->get()
-            ->pluck('manual_id')
-            ->toArray();
-
-        if (count($manualIds)) {
+        try {
             $manuals = Manual::with(['thumbnails' => function($query) {
                     $query->first();
                 }])
                 ->leftJoin('sub_categories', 'manuals.id', '=', 'sub_categories.id')
                 ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
                 ->whereHas('thumbnails')
-                ->whereIn('manuals.id', $manualIds)
                 ->select(
                     'manuals.*',
                     'sub_categories.url_slug as sub_url_slug',
                     'main_categories.url_slug as main_url_slug'
                 )
+                ->limit(4)
                 ->orderBy('id', 'desc')
                 ->get()
                 ->map(function ($manual) {
@@ -210,9 +169,58 @@ class ManualController extends Controller
 
                     return $manual;
                 });
+
+            return response()->json([
+                'data' => $manuals
+            ]);
+        } catch (Exception $e) {
+            throw $e;
         }
-        return response()->json([
-            'data' => $manuals
-        ]);
+    }
+
+    public function getBestSetting() {
+        try {
+            $manuals = [];
+
+            $manualIds = Cart::where('status', 'sold')
+                ->select('manual_id', 'price')
+                ->orderBy('price', 'desc')
+                ->distinct('manual_id')
+                ->limit(4)
+                ->get()
+                ->pluck('manual_id')
+                ->toArray();
+    
+            if (count($manualIds)) {
+                $manuals = Manual::with(['thumbnails' => function($query) {
+                        $query->first();
+                    }])
+                    ->leftJoin('sub_categories', 'manuals.id', '=', 'sub_categories.id')
+                    ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
+                    ->whereHas('thumbnails')
+                    ->whereIn('manuals.id', $manualIds)
+                    ->select(
+                        'manuals.*',
+                        'sub_categories.url_slug as sub_url_slug',
+                        'main_categories.url_slug as main_url_slug'
+                    )
+                    ->orderBy('id', 'desc')
+                    ->get()
+                    ->map(function ($manual) {
+                        $filePath = 'documents/thumbnails/' . $manual->thumbnails->first()->filename;
+                        $expiry = now()->addMinutes(15);
+                        $url = Storage::temporaryUrl($filePath, $expiry);
+    
+                        $manual->thumbnails->first()->url = $url;
+    
+                        return $manual;
+                    });
+            }
+            return response()->json([
+                'data' => $manuals
+            ]);
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 }
