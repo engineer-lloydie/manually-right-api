@@ -159,16 +159,16 @@ class ManualController extends Controller
                 )
                 ->limit(4)
                 ->orderBy('id', 'desc')
-                ->get()
-                ->map(function ($manual) {
-                    $filePath = 'documents/thumbnails/' . $manual->thumbnails->first()->filename;
-                    $expiry = now()->addMinutes(15);
-                    $url = Storage::temporaryUrl($filePath, $expiry);
+                ->get();
+                // ->map(function ($manual) {
+                //     $filePath = 'documents/thumbnails/' . $manual->thumbnails->first()->filename;
+                //     $expiry = now()->addMinutes(15);
+                //     $url = Storage::temporaryUrl($filePath, $expiry);
 
-                    $manual->thumbnails->first()->url = $url;
+                //     $manual->thumbnails->first()->url = $url;
 
-                    return $manual;
-                });
+                //     return $manual;
+                // });
 
             return response()->json([
                 'data' => $manuals
