@@ -147,7 +147,7 @@ class ManualController extends Controller
     public function getLatestProducts() {
         try {
             $manuals = Manual::with('thumbnails')
-                ->leftJoin('sub_categories', 'manuals.id', '=', 'sub_categories.id')
+                ->leftJoin('sub_categories', 'manuals.sub_category_id', '=', 'sub_categories.id')
                 ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
                 ->whereHas('thumbnails')
                 ->select(
@@ -191,7 +191,7 @@ class ManualController extends Controller
     
             if (count($manualIds)) {
                 $manuals = Manual::with('thumbnails')
-                    ->leftJoin('sub_categories', 'manuals.id', '=', 'sub_categories.id')
+                    ->leftJoin('sub_categories', 'manuals.sub_category_id', '=', 'sub_categories.id')
                     ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
                     ->whereHas('thumbnails')
                     ->whereIn('manuals.id', $manualIds)
