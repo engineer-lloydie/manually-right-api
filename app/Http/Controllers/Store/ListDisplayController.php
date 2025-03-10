@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MainCategory;
 use App\Models\Manual;
 use App\Models\SubCategory;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -35,32 +36,38 @@ class ListDisplayController extends Controller
         ]);
     }
 
-    public function getManuals($subCategoryId) {
-        $manuals = Manual::with('thumbnails')
-            ->where('sub_category_id', $subCategoryId)
-            ->whereHas('thumbnails')
-            ->get()
-            ->transform(function ($manual) {
-                $manual->thumbnail = null;
+    public function getManuals(Request $request, $subCategoryId) {
+        try {
+            $manuals = Manual::with('thumbnails')
+                ->where('sub_category_id', $subCategoryId)
+                ->whereHas('thumbnails')
+                ->paginate($request->query('itemsPerPage'));
 
-                if ($manual->thumbnails->isNotEmpty()) {
-                    $manualThumbnail = $manual->thumbnails->first();
+                $manuals->getCollection()
+                    ->transform(function ($manual) {
+                        $manual->thumbnail = null;
 
-                    $filePath = 'documents/thumbnails/' . $manualThumbnail->filename;
-                    $expiry = now()->addMinutes(15);
-                    $url = Storage::temporaryUrl($filePath, $expiry);
+                        if ($manual->thumbnails->isNotEmpty()) {
+                            $manualThumbnail = $manual->thumbnails->first();
 
-                    $manual->thumbnail = $url;
-                }
+                            $filePath = 'documents/thumbnails/' . $manualThumbnail->filename;
+                            $expiry = now()->addMinutes(15);
+                            $url = Storage::temporaryUrl($filePath, $expiry);
 
-                unset($manual->thumbnails);
+                            $manual->thumbnail = $url;
+                        }
 
-                return $manual;
-            });
+                        unset($manual->thumbnails);
 
-        return response()->json([
-            'data' =>  $manuals
-        ]); 
+                        return $manual;
+                    });
+
+            return response()->json(
+                $manuals
+            ); 
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     public function getManualDetails(Request $request) {
