@@ -51,9 +51,7 @@ class ManualController extends Controller
                 ]);
             }
 
-            $manuals = Manual::with(['thumbnails' => function($query) {
-                    $query->first();
-                }])
+            $manuals = Manual::with('thumbnails')
                 ->leftJoin('sub_categories', 'manuals.id', '=', 'sub_categories.id')
                 ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
                 ->whereHas('thumbnails')
