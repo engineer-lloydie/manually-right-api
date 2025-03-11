@@ -20,8 +20,8 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'http://localhost:3000',
-        'http://localhost:3001',
+        'http://localhost:3010',
+        'http://localhost:3011',
         'https://manually-right.com',
         'https://manually-right.com/',
         'https://admin.manually-right.com',
