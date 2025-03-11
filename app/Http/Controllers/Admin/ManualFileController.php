@@ -119,7 +119,7 @@ class ManualFileController extends Controller
     }
 
     protected function getFilesFromIds($manualId) {
-        return ManualFile::where('id', $manualId)
+        return ManualFile::where('manual_id', $manualId)
             ->select('filename')
             ->get()
             ->map(function ($manual) {
