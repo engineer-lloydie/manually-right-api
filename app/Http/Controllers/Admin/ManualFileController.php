@@ -87,7 +87,7 @@ class ManualFileController extends Controller
             
             $files = $this->getFilesFromIds($data['manualId']);
 
-            if ($files->empty()) {
+            if ($files->isEmpty()) {
                 return response()->json(['error' => 'No files found. Please contact the administrator.'], 404);
             }
     
