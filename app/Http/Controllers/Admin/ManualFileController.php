@@ -86,6 +86,10 @@ class ManualFileController extends Controller
             ]);
             
             $files = $this->getFilesFromIds($data['manualId']);
+
+            if ($files->empty()) {
+                return response()->json(['error' => 'No files found. Please contact the administrator.'], 404);
+            }
     
             $zipFileName = tempnam(sys_get_temp_dir(), 'zip');
             $zip = new ZipArchive();
