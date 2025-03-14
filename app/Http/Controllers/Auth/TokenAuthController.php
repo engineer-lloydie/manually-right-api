@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Factories\AuthFactory;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use App\Services\Auth\LoginService;
+use App\Services\Auth\RegisterService;
+use AWS\CRT\Log;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,47 +20,18 @@ class TokenAuthController extends Controller
         return auth()->user();
     }
 
-    public function register(Request $request) {
+    public function register(RegisterRequest $request, RegisterService $registerService) {
         try {
-            $registerUserData = $request->validate([
-                'first_name'=>'required|string',
-                'last_name'=>'required|string',
-                'email_address'=>'required|string|email|unique:users',
-                'password'=>'required|min:8'
-            ]);
-    
-            User::create([
-                'customer_id' => date('ymdhis'),
-                'first_name' => $registerUserData['first_name'],
-                'last_name' => $registerUserData['last_name'],
-                'email_address' => $registerUserData['email_address'],
-                'password' => Hash::make($registerUserData['password']),
-            ]);
-    
-            return response()->json([
-                'message' => 'User Created'
-            ]);
+            return $registerService->register($request);
         } catch (Exception $e) {
             throw $e;
         }
     }
 
-    public function login(Request $request) {
+    public function login(Request $request, LoginService $loginService) {
         try {
-            $request->validate([
-                'email_address'=>'required|string|email',
-                'password'=>'required|min:8'
-            ]);
-    
-            if (Auth::attempt($request->only('email_address', 'password'))) {
-                // Generate a token using Sanctum
-                $user = Auth::user();
-                $token = $user->createToken(env('APP_NAME'))->plainTextToken;
-        
-                return response()->json(['token' => $token]);
-            }
-        
-            return response()->json(['message' => 'Invalid credentials. Please input correct email and password.'], 400);
+            $authStrategy = AuthFactory::create($request->input('auth_method'));
+            return $loginService->login($request, $authStrategy);
         } catch (Exception $e) {
             throw $e;
         }
