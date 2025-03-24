@@ -14,4 +14,14 @@ class SubCategory extends Model
         'thumbnail',
         'status'
     ];
+
+    public function mainCategory()
+    {
+        return $this->belongsTo(MainCategory::class);
+    }
+
+    public function manuals()
+    {
+        return $this->hasMany(Manual::class);
+    }
 }

@@ -10,6 +10,7 @@ use App\Http\Controllers\BannerController;
 use App\Http\Controllers\OrderCompletionController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayPalController;
+use App\Http\Controllers\SitemapUrlController;
 use App\Http\Controllers\Store\CartController;
 use App\Http\Controllers\Store\ListDisplayController;
 use Illuminate\Http\Request;
@@ -109,3 +110,5 @@ Route::prefix('/banners')->group(function () {
     Route::delete('/{bannerId}', [BannerController::class, 'deleteBanner']);
     Route::get('/{bannerId}/preview', [BannerController::class, 'previewBanner']);
 });
+
+Route::get('/sitemap/pages/urls', [SitemapUrlController::class, 'getURLs']);

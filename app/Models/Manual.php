@@ -15,6 +15,10 @@ class Manual extends Model
         'status'
     ];
 
+    public function subCategory() {
+        return $this->belongsTo(SubCategory::class);
+    }
+
     public function files() {
         return $this->hasMany(ManualFile::class);
     }
