@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ManualThumbnailController;
 use App\Http\Controllers\Admin\SubCategoryContoller;
 use App\Http\Controllers\Auth\TokenAuthController;
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\OrderCompletionController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayPalController;
@@ -112,3 +113,5 @@ Route::prefix('/banners')->group(function () {
 });
 
 Route::get('/sitemap/pages/urls', [SitemapUrlController::class, 'getURLs']);
+
+Route::post('/inquiries/message', [InquiryController::class, 'sendMessage']);

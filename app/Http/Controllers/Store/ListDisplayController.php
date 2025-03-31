@@ -31,9 +31,9 @@ class ListDisplayController extends Controller
     }
 
     public function getSubCategory(Request $request) {
-        return response()->json([
-            'data' =>  SubCategory::where('url_slug', $request->query('urlSlug'))->first()
-        ]);
+        return response()->json(
+            SubCategory::where('url_slug', $request->query('urlSlug'))->first()
+        );
     }
 
     public function getManuals(Request $request, $subCategoryId) {
