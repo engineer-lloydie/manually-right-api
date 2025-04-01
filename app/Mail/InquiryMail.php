@@ -14,12 +14,13 @@ class InquiryMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $data;
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($data)
     {
-        //
+        $this->data = $data;
     }
 
     /**
@@ -28,8 +29,11 @@ class InquiryMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('manuallyright@gmail.com', 'Manually Right'),
-            subject: 'Test Email',
+            from: new Address(env('MAIL_FROM_ADDRESS'), 'Client Inquiry'),
+            replyTo: [
+                new Address($this->data['email'], $this->data['first_name']),
+            ],
+            subject: 'Client Inquiry',
         );
     }
 
@@ -39,7 +43,7 @@ class InquiryMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.inquiry.message',
         );
     }
 
