@@ -15,14 +15,17 @@ class SubCategoryContoller extends Controller
             ->select('sub_categories.*', 'main_categories.name as main_category');
 
             if (!$request->has('page')) {
-                return $initialQuery->get();
+                return $initialQuery->orderBy('sub_categories.name')->get();
             } else {
                 return $initialQuery->when($request->has('sortBy'), function($query) use ($request) {
                         $params = json_decode($request->query('sortBy'));
         
                         $query->orderBy($params->key, $params->order);
                     }, function ($query) {
-                        $query->orderBy('id', 'desc');
+                        $query->orderBy('sub_categories.name');
+                    })
+                    ->when(!empty($request->has('search')), function($query) use ($request) {
+                        $query->where('sub_categories.name', 'like', '%' . $request->query('search') . '%');
                     })
                     ->paginate($request->query(('itemsPerPage')));
             }

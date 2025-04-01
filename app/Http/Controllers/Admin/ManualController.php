@@ -20,14 +20,17 @@ class ManualController extends Controller
             ->select('manuals.*', 'sub_categories.name as category');
 
             if (!$request->has('page')) {
-                return $initialQuery->get();
+                return $initialQuery->orderBy('manuals.title')->get();
             } else {
                 return $initialQuery->when($request->has('sortBy'), function($query) use ($request) {
                         $params = json_decode($request->query('sortBy'));
         
                         $query->orderBy($params->key, $params->order);
                     }, function ($query) {
-                        $query->orderBy('id', 'desc');
+                        $query->orderBy('manuals.title', 'asc');
+                    })
+                    ->when(!empty($request->has('search')), function($query) use ($request) {
+                        $query->where('manuals.title', 'like', '%' . $request->query('search') . '%');
                     })
                     ->paginate($request->query(('itemsPerPage')));
             }

@@ -13,14 +13,17 @@ class MainCategoryController extends Controller
         $initialQuery = DB::table('main_categories');
 
         if (!$request->has('page')) {
-            return $initialQuery->get();
+            return $initialQuery->orderBy('name')->get();
         } else {
             return $initialQuery->when($request->has('sortBy'), function($query) use ($request) {
                     $params = json_decode($request->query('sortBy'));
 
                     $query->orderBy($params->key, $params->order);
                 }, function ($query) {
-                    $query->orderBy('id', 'desc');
+                    $query->orderBy('name', 'asc');
+                })
+                ->when(!empty($request->has('search')), function($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->query('search') . '%');
                 })
                 ->paginate($request->query(('itemsPerPage')));
         }
