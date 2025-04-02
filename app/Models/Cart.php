@@ -17,8 +17,6 @@ class Cart extends Model
 
     public function manual() {
         return $this->belongsTo(Manual::class, 'manual_id')
-            ->with(['thumbnails' => function ($query) {
-                $query->first();
-            }]);
+            ->with('thumbnails');
     }
 }

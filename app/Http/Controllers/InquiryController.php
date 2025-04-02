@@ -19,18 +19,21 @@ class InquiryController extends Controller
             $expiry = now()->addMinutes(15);
             $url = Storage::temporaryUrl($filePath, $expiry);
 
+            $inquiry = Inquiry::create([
+                'first_name' => $request->firstName,
+                'email' => $request->email,
+                'message' => $request->message,
+            ]);
+
+            $inquiry->createInquiryNumber($inquiry->id);
+
             Mail::to('manuallyright@gmail.com')->send(new InquiryMail([
+                'inquiry_number' => $inquiry->number,
                 'first_name' => $request->input('firstName'),
                 'email' => $request->input('email'),
                 'message' => $request->input('message'),
                 'logo_url' => $url
             ]));
-            
-            Inquiry::create([
-                'first_name' => $request->firstName,
-                'email' => $request->email,
-                'message' => $request->message,
-            ]);
 
             return response()->json(['message' => 'Inquiry sent successfully!'], 200);
         } catch (Exception $e) {

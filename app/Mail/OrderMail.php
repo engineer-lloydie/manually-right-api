@@ -10,11 +10,12 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
 
-class InquiryMail extends Mailable
+class OrderMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $data;
+
     /**
      * Create a new message instance.
      */
@@ -29,11 +30,8 @@ class InquiryMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address(env('MAIL_FROM_ADDRESS'), 'Client Inquiry'),
-            replyTo: [
-                new Address($this->data['email'], $this->data['first_name']),
-            ],
-            subject: 'Inquiry #' . $this->data['inquiry_number'],
+            from: new Address(env('MAIL_FROM_ADDRESS'), 'ManuallyRight'),
+            subject: 'Thank you for your order. Order number. ' . $this->data['order_number']
         );
     }
 
@@ -43,7 +41,7 @@ class InquiryMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.inquiry.message',
+            view: 'emails.order.message',
         );
     }
 
