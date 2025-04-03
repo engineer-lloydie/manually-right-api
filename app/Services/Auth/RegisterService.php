@@ -12,7 +12,6 @@ class RegisterService
         User::create([
             'customer_id' => date('ymdhis'),
             'first_name' => $request->input('first_name'),
-            'last_name' => $request->input('last_name'),
             'email_address' => $request->input('email_address'),
             'password' => Hash::make($request->input('password')),
         ]);

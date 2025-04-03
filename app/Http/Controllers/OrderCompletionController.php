@@ -55,8 +55,7 @@ class OrderCompletionController extends Controller
                     'guest_id' => $request->input('guestId'),
                     'order_master_id' => $orderMaster->id,
                     'email_address' => $request->input('emailAddress'),
-                    'first_name' => $request->input('firstName'),
-                    'last_name' => $request->input('lastName')
+                    'first_name' => $request->input('firstName')
                 ]);
 
                 $first_name = $request->input('firstName');

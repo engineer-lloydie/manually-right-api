@@ -10,7 +10,6 @@ class GuestOrder extends Model
         'guest_id',
         'order_master_id',
         'email_address',
-        'first_name',
-        'last_name'
+        'first_name'
     ];
 }

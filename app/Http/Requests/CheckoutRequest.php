@@ -23,7 +23,6 @@ class CheckoutRequest extends FormRequest
     {
         return [
             'firstName' => 'required',
-            'lastName' => 'required',
             'emailAddress' => 'required',
             'transactionId' => 'required',
             'cartIds' => 'required',

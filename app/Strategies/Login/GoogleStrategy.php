@@ -32,7 +32,6 @@ class GoogleStrategy implements AuthLoginInterface
             $googleId = $payload['sub'];
             $emailAddress = $payload['email'];
             $firstName = $payload['given_name'];
-            $lastName = $payload['family_name'];
 
             $user = User::where('email_address', $emailAddress)->first();
 
@@ -41,13 +40,11 @@ class GoogleStrategy implements AuthLoginInterface
                     'email_address' => $emailAddress,
                     'customer_id' => date('ymdhis'),
                     'first_name' => $firstName,
-                    'last_name' => $lastName,
                     'email_verified_at' => Carbon::now(),
                 ]);
             } else {
                 $user->update([
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
+                    'first_name' => $firstName
                 ]);
             }
 
