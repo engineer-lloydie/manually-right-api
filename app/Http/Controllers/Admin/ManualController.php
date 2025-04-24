@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 class ManualController extends Controller
 {
     public function getManuals(Request $request) {
-        $initialQuery = DB::table('manuals')
+        $initialQuery = Manual::with('metaTags')
             ->join('sub_categories', 'sub_category_id', '=', 'sub_categories.id')
             ->select('manuals.*', 'sub_categories.name as category');
 

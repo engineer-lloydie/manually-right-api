@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class SubCategoryContoller extends Controller
 {
     public function getCategories(Request $request) {
-        $initialQuery = DB::table('sub_categories')
+        $initialQuery = SubCategory::with('metaTags')
             ->join('main_categories', 'main_category_id', '=', 'main_categories.id')
             ->select('sub_categories.*', 'main_categories.name as main_category');
 

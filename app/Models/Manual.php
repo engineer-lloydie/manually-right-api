@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Manual extends Model
 {
@@ -25,5 +26,10 @@ class Manual extends Model
 
     public function thumbnails() {
         return $this->hasMany(ManualThumbnail::class);
+    }
+
+    public function metaTags(): MorphOne
+    {
+        return $this->morphOne(MetaTag::class, 'metaable');
     }
 }

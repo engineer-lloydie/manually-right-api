@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('site_meta_tags', function (Blueprint $table) {
+        Schema::create('meta_tags', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('manual_id')->constrained('manuals')->onDelete('cascade');
             $table->longText('title');
             $table->longText('description');
-            $table->longText('keywords');
+            $table->integer('metaable_id');
+            $table->string('metaable_type');
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('site_meta_tags');
+        Schema::dropIfExists('meta_tags');
     }
 };
