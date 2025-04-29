@@ -71,7 +71,7 @@ class ListDisplayController extends Controller
     }
 
     public function getManualDetails(Request $request) {
-        $manual = Manual::with(['files', 'thumbnails'])
+        $manual = Manual::with(['files', 'thumbnails', 'metaTags'])
             ->where('url_slug', $request->query('urlSlug'))
             ->first();
 
