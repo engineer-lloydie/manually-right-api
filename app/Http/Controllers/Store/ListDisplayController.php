@@ -88,4 +88,62 @@ class ListDisplayController extends Controller
             'data' =>  $manual
         ]); 
     }
+
+    public function getRelatedProducts(Request $request) {
+        try {
+            $manuals = Manual::with('thumbnails')
+                ->leftJoin('sub_categories', 'manuals.sub_category_id', '=', 'sub_categories.id')
+                ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
+                ->where('manuals.sub_category_id', $request->query('subCategoryId'))
+                ->where('manuals.id', '!=', $request->query('manualId'))
+                ->whereHas('thumbnails')
+                ->select(
+                    'manuals.*',
+                    'sub_categories.url_slug as sub_url_slug',
+                    'main_categories.url_slug as main_url_slug'
+                )
+                ->take(4)
+                ->get();
+
+            if ($manuals->count() < 4) {
+                $manuals = $manuals->merge(Manual::with('thumbnails')
+                    ->leftJoin('sub_categories', 'manuals.sub_category_id', '=', 'sub_categories.id')
+                    ->leftJoin('main_categories', 'sub_categories.main_category_id', '=', 'main_categories.id')
+                    ->where('manuals.id', '!=', $request->query('manualId'))
+                    ->whereHas('thumbnails')
+                    ->select(
+                        'manuals.*',
+                        'sub_categories.url_slug as sub_url_slug',
+                        'main_categories.url_slug as main_url_slug'
+                    )
+                    ->orderBy('created_at', 'desc')
+                    ->take(4 - $manuals->count())
+                    ->get());
+            }
+
+            $manuals->transform(function ($manual) {
+                $manual->thumbnail = null;
+
+                if ($manual->thumbnails->isNotEmpty()) {
+                    $manualThumbnail = $manual->thumbnails->first();
+
+                    $filePath = 'documents/thumbnails/' . $manualThumbnail->filename;
+                    $expiry = now()->addMinutes(15);
+                    $url = Storage::temporaryUrl($filePath, $expiry);
+
+                    $manual->thumbnail = $url;
+                }
+
+                unset($manual->thumbnails);
+
+                return $manual;
+            });
+
+            return response()->json(
+                $manuals
+            ); 
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
 }

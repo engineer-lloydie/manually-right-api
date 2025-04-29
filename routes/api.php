@@ -86,6 +86,8 @@ Route::prefix('/store')->group(function () {
         Route::get('/sub-categories/{id}/manuals', [ListDisplayController::class, 'getManuals']);
         Route::get('/sub-categories/manual-details', [ListDisplayController::class, 'getManualDetails']);
     });
+
+    Route::get('/related-products', [ListDisplayController::class, 'getRelatedProducts']);
 });
 
 Route::get('/carts', [CartController::class, 'fetchCarts']);
