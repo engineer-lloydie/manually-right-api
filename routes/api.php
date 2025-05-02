@@ -8,10 +8,12 @@ use App\Http\Controllers\Admin\SubCategoryContoller;
 use App\Http\Controllers\Auth\TokenAuthController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\InquiryController;
+use App\Http\Controllers\MetaTagController;
 use App\Http\Controllers\OrderCompletionController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\SitemapUrlController;
+use App\Http\Controllers\SitePageController;
 use App\Http\Controllers\Store\CartController;
 use App\Http\Controllers\Store\ListDisplayController;
 use Illuminate\Http\Request;
@@ -60,7 +62,19 @@ Route::prefix('/admin')->group(function () {
         
         Route::get('file-signed-url/{id}', [ManualController::class, 'getSignedUrl']);
     });
-});
+
+    Route::prefix('/site-pages')->group(function () {
+        Route::get('/', [SitePageController::class, 'fetchSitePages']);
+        Route::post('/', [SitePageController::class, 'createSitePage']);
+        Route::put('/{sitePageId}', [SitePageController::class, 'updateSitePage']);
+        Route::delete('/{sitePageId}', [SitePageController::class, 'deleteSitePage']);
+    });
+
+    Route::prefix('/meta-tags')->group(function () {
+        Route::post('/{metaableId}', [MetaTagController::class, 'createMetaTag']);
+        Route::put('/{metaableId}', [MetaTagController::class, 'updateMetaTag']);
+    });
+})->middleware(['auth:sanctum']);
 
 // Client Routes
 Route::prefix('/store')->group(function () {
@@ -72,6 +86,8 @@ Route::prefix('/store')->group(function () {
         Route::get('/sub-categories/{id}/manuals', [ListDisplayController::class, 'getManuals']);
         Route::get('/sub-categories/manual-details', [ListDisplayController::class, 'getManualDetails']);
     });
+
+    Route::get('/related-products', [ListDisplayController::class, 'getRelatedProducts']);
 });
 
 Route::get('/carts', [CartController::class, 'fetchCarts']);
