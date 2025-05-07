@@ -22,7 +22,7 @@ class SubCategoryContoller extends Controller
         
                         $query->orderBy($params->key, $params->order);
                     }, function ($query) {
-                        $query->orderBy('sub_categories.id');
+                        $query->orderBy('sub_categories.id', 'desc');
                     })
                     ->when(!empty($request->has('search')), function($query) use ($request) {
                         $query->where('sub_categories.name', 'like', '%' . $request->query('search') . '%');
