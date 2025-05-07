@@ -20,7 +20,7 @@ class MainCategoryController extends Controller
 
                     $query->orderBy($params->key, $params->order);
                 }, function ($query) {
-                    $query->orderBy('name', 'asc');
+                    $query->orderBy('id', 'asc');
                 })
                 ->when(!empty($request->has('search')), function($query) use ($request) {
                     $query->where('name', 'like', '%' . $request->query('search') . '%');

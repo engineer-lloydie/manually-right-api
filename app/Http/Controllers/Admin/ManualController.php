@@ -27,7 +27,7 @@ class ManualController extends Controller
         
                         $query->orderBy($params->key, $params->order);
                     }, function ($query) {
-                        $query->orderBy('manuals.title', 'asc');
+                        $query->orderBy('manuals.id', 'asc');
                     })
                     ->when(!empty($request->has('search')), function($query) use ($request) {
                         $query->where('manuals.title', 'like', '%' . $request->query('search') . '%');
