@@ -1,0 +1,31 @@
+version: "3"
+
+rpc:
+  listen: tcp://127.0.0.1:6001
+
+http:
+  address: "0.0.0.0:8000"
+  middleware: ["static", "gzip"]
+  pool:
+    num_workers: 0 # Use 0 for auto-detection based on CPU cores
+    # supervisor:
+    #   watch_tick: 1s
+    #   ttl: 0s
+    #   idle_ttl: 10m
+    #   exec_timeout: 1h
+    #   max_worker_memory: 256
+  static:
+    dir: "public"
+    forbid: [".php", ".htaccess"]
+
+server:
+  command: "php vendor/bin/roadrunner-worker"
+  # user: www-data  # Uncomment and set if ./rr serve is run as root
+  # group: www-data # and you want workers to run as a different user
+
+logs:
+  mode: production
+  level: info
+  channels:
+    default:
+      output: stdout
