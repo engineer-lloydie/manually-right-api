@@ -71,9 +71,12 @@ Route::prefix('/admin')->group(function () {
     });
 
     Route::prefix('/meta-tags')->group(function () {
+        Route::get('/', [MetaTagController::class, 'fetchMetaTags']);
         Route::post('/{metaableId}', [MetaTagController::class, 'createMetaTag']);
         Route::put('/{metaableId}', [MetaTagController::class, 'updateMetaTag']);
     });
+
+
 })->middleware(['auth:sanctum']);
 
 // Client Routes

@@ -4,12 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MetaTagRequest;
 use App\Models\Manual;
+use App\Models\MetaTag;
 use App\Models\SitePage;
 use App\Models\SubCategory;
 use Exception;
+use Illuminate\Http\Request;
 
 class MetaTagController extends Controller
 {
+        public function fetchMetaTags(Request $request) {
+        try {
+            return MetaTag::where('status', 'active')
+                ->when($request->has('sortBy'), function($query) use ($request) {
+                    $params = json_decode($request->query('sortBy'));
+
+                    $query->orderBy($params->key, $params->order);
+                }, function ($query) {
+                    $query->orderBy('id', 'desc');
+                })
+                ->when(!empty($request->has('search')), function($query) use ($request) {
+                    $query->where('title', 'like', '%' . $request->query('search') . '%');
+                })
+                ->paginate($request->query(('itemsPerPage')));
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
     public function createMetaTag(MetaTagRequest $request, $metaableId)
     {
         try {
