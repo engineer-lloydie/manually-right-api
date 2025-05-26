@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class MetaTagController extends Controller
 {
-        public function fetchMetaTags(Request $request) {
+    public function fetchMetaTags(Request $request) {
         try {
             return MetaTag::where('status', 'active')
                 ->when($request->has('sortBy'), function($query) use ($request) {
