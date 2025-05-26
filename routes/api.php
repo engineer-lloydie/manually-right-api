@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MainCategoryController;
 use App\Http\Controllers\Admin\ManualController;
 use App\Http\Controllers\Admin\ManualFileController;
@@ -61,6 +62,13 @@ Route::prefix('/admin')->group(function () {
         });
         
         Route::get('file-signed-url/{id}', [ManualController::class, 'getSignedUrl']);
+    });
+
+    Route::prefix('/dashboard')->group(function () {
+        Route::get('/top-selling-manuals', [DashboardController::class, 'getTopSellingProducts']);
+        Route::get('/sales-today', [DashboardController::class, 'calculateTodaysSales']);
+        Route::get('/app-summary', [DashboardController::class, 'countAppSummary']);
+        Route::get('/order-history', [DashboardController::class, 'countOrderHistory']);
     });
 
     Route::prefix('/site-pages')->group(function () {
